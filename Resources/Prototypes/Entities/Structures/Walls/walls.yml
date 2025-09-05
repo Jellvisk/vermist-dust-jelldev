@@ -1021,6 +1021,7 @@
   - type: IconSmooth
     key: walls
     base: solid
+  - type: Magnetic
 
 - type: entity
   parent: WallDiagonalBase
