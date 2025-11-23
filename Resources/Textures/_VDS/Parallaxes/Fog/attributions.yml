@@ -1,0 +1,4 @@
+- files: [ "1-blackness.png", "2-subtle.png", "3-cubes.png", "4-fog1.png", "5-fog2.png", "6-fog3.png", "7-forefog.png" ]
+  license: "CC-BY-NC-SA-3.0"
+  copyright: "by Jellvisk for Vermist Dust Sector (https://github.com/vermist-sector/vermist-dust)"
+  source: "https://github.com/Jellvisk"

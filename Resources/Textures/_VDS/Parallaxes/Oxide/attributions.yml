@@ -1,0 +1,4 @@
+- files: [ "1-bubblespace.png", "2-stars1.png", "3-stars2.png", "4-smallclusters.png", "5-thindust.png", "6-coarsedust1.png", "7-coarsedust2.png", "8-oxide1.png", "9-oxidethin.png" "10-oxide2.png" ]
+  license: "CC-BY-NC-SA-3.0"
+  copyright: "by Jellvisk for Vermist Dust Sector (https://github.com/vermist-sector/vermist-dust)"
+  source: "https://github.com/Jellvisk"

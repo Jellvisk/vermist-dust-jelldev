@@ -1,0 +1,20 @@
+- files: ["countdown.ogg,
+          creak10.ogg,
+          creak11.ogg,
+          creak1.ogg,
+          creak2.ogg,
+          creak3.ogg,
+          creak4.ogg,
+          creak5.ogg,
+          creak6.ogg,
+          creak7.ogg,
+          creak8.ogg,
+          creak9.ogg,
+          thud1.ogg,
+          thud2.ogg,
+          thud2short.ogg,
+          thud3.ogg,
+          thud4.ogg"]
+  license: "CC-BY-NC-4.0"
+  copyright: "bbc.co.uk – © copyright 2025 BBC, heavily modified by animal_collective "
+  source: "https://sound-effects.bbcrewind.co.uk"

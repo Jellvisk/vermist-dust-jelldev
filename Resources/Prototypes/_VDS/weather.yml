@@ -3,3 +3,9 @@
   sprite:
     sprite: /Textures/_VDS/Effects/weather.rsi
     state: dust_sprinkle
+
+- type: weather
+  id: Void100
+  sprite:
+    sprite: /Textures/_VDS/Effects/weather.rsi
+    state: void100

@@ -1,0 +1,43 @@
+- type: parallax
+  id: Fog
+  layers:
+    - texture:
+        !type:ImageParallaxTextureSource
+        path: "/Textures/_VDS/Parallaxes/Fog/1-blackness.png"
+      slowness: 0.999
+      scale: "2, 2"
+    - texture:
+        !type:ImageParallaxTextureSource
+        path: "/Textures/_VDS/Parallaxes/Fog/2-subtle.png"
+      slowness: 0.998
+      scale: "1, 1"
+    - texture:
+        !type:ImageParallaxTextureSource
+        path: "/Textures/_VDS/Parallaxes/Fog/3-cubes.png"
+      slowness: 0.996
+      scale: "1, 1"
+      scrolling: "-0.00093, 0.0022"
+    - texture:
+        !type:ImageParallaxTextureSource
+        path: "/Textures/_VDS/Parallaxes/Fog/4-fog1.png"
+      slowness: 0.990
+      scale: "1, 1"
+      scrolling: "0.0045, -0.005"
+    - texture:
+        !type:ImageParallaxTextureSource
+        path: "/Textures/_VDS/Parallaxes/Fog/5-fog2.png"
+      slowness: 0.980
+      scale: "1.2, 1.2"
+      scrolling: "-0.0035, 0.0001"
+    - texture:
+        !type:ImageParallaxTextureSource
+        path: "/Textures/_VDS/Parallaxes/Fog/6-fog3.png"
+      slowness: 0.970
+      scale: "1.5, 1.5"
+      scrolling: "-0.04, -0.087"
+    - texture:
+        !type:ImageParallaxTextureSource
+        path: "/Textures/_VDS/Parallaxes/Fog/7-forefog.png"
+      slowness: 0.962
+      scale: "2, 2"
+      scrolling: "0.512, 0.011"

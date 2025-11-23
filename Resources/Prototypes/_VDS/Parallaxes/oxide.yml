@@ -1,0 +1,60 @@
+- type: parallax
+  id: Oxide
+  layers:
+    - texture:
+        !type:ImageParallaxTextureSource
+        path: "/Textures/_VDS/Parallaxes/Oxide/1-bubblespace.png"
+      slowness: 0.999
+      scale: "2, 2"
+    - texture:
+        !type:ImageParallaxTextureSource
+        path: "/Textures/_VDS/Parallaxes/Oxide/2-stars1.png"
+      slowness: 0.998
+      scale: "1, 1"
+    - texture:
+        !type:ImageParallaxTextureSource
+        path: "/Textures/_VDS/Parallaxes/Oxide/3-stars2.png"
+      slowness: 0.996
+      scale: "1, 1"
+    - texture:
+        !type:ImageParallaxTextureSource
+        path: "/Textures/_VDS/Parallaxes/Oxide/4-smallclusters.png"
+      slowness: 0.993
+      scale: "1, 1"
+      scrolling: "0.0093, 0.0002"
+    - texture:
+        !type:ImageParallaxTextureSource
+        path: "/Textures/_VDS/Parallaxes/Oxide/5-thindust.png"
+      slowness: 0.990
+      scale: "1, 1"
+      scrolling: "-0.0055, 0.00001"
+    - texture:
+        !type:ImageParallaxTextureSource
+        path: "/Textures/_VDS/Parallaxes/Oxide/6-coarsedust1.png"
+      slowness: 0.984
+      scale: "1, 1"
+      scrolling: "-0.0009, -0.00087"
+    - texture:
+        !type:ImageParallaxTextureSource
+        path: "/Textures/_VDS/Parallaxes/Oxide/7-coarsedust2.png"
+      slowness: 0.982
+      scale: "1, 1"
+      scrolling: "0.00177777, 0.011"
+    - texture:
+        !type:ImageParallaxTextureSource
+        path: "/Textures/_VDS/Parallaxes/Oxide/8-oxide1.png"
+      slowness: 0.980
+      scale: "1, 1"
+      scrolling: "0.00255, -0.018"
+    - texture:
+        !type:ImageParallaxTextureSource
+        path: "/Textures/_VDS/Parallaxes/Oxide/9-oxidethin.png"
+      slowness: 0.968
+      scale: "1, 1"
+      scrolling: "0.0095, 0.0001"
+    - texture:
+        !type:ImageParallaxTextureSource
+        path: "/Textures/_VDS/Parallaxes/Oxide/10-oxide2.png"
+      slowness: 0.964
+      scale: "1, 1"
+      scrolling: "-0.0495, 0.0035"
