@@ -17,6 +17,7 @@ using Robust.Shared.Physics.Systems;
 using Robust.Shared.Random;
 using Content.Shared.Examine;
 using Content.Shared.Localizations;
+using Robust.Shared.Timing;
 
 namespace Content.Shared.Weapons.Reflect;
 
@@ -25,6 +26,7 @@ namespace Content.Shared.Weapons.Reflect;
 /// </summary>
 public sealed class ReflectSystem : EntitySystem
 {
+    [Dependency] private readonly IGameTiming _timing = default!;
     [Dependency] private readonly INetManager _netManager = default!;
     [Dependency] private readonly IRobustRandom _random = default!;
     [Dependency] private readonly ISharedAdminLogManager _adminLogger = default!;
@@ -109,6 +111,10 @@ public sealed class ReflectSystem : EntitySystem
             return false;
         }
 
+        if (reflector.Comp.PhysicsCooldown.HasValue
+            && reflector.Comp.PhysicsCooldown.)
+        {
+        }
         var rotation = _random.NextAngle(-reflector.Comp.Spread / 2, reflector.Comp.Spread / 2).Opposite();
         var existingVelocity = _physics.GetMapLinearVelocity(projectile, component: physics);
         var relativeVelocity = existingVelocity - _physics.GetMapLinearVelocity(user);

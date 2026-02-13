@@ -5,6 +5,7 @@ using Content.Shared.Damage.Systems;
 using Content.Shared.Database;
 using Content.Shared.FixedPoint;
 using Content.Shared.Mobs.Systems;
+using Content.Shared.Projectiles;
 using Robust.Shared.Physics.Events;
 using Robust.Shared.Player;
 
@@ -20,25 +21,25 @@ public sealed class MeteorSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<MeteorComponent, StartCollideEvent>(OnCollide);
+        SubscribeLocalEvent<MeteorComponent, ProjectileHitEvent>(OnCollide);
     }
 
-    private void OnCollide(EntityUid uid, MeteorComponent component, ref StartCollideEvent args)
+    private void OnCollide(EntityUid uid, MeteorComponent component, ref ProjectileHitEvent args)
     {
-        if (TerminatingOrDeleted(args.OtherEntity) || TerminatingOrDeleted(uid))
+        if (TerminatingOrDeleted(args.Target) || TerminatingOrDeleted(uid))
             return;
 
-        if (component.HitList.Contains(args.OtherEntity))
+        if (component.HitList.Contains(args.Target))
             return;
 
         FixedPoint2 threshold;
-        if (_mobThreshold.TryGetDeadThreshold(args.OtherEntity, out var mobThreshold))
+        if (_mobThreshold.TryGetDeadThreshold(args.Target, out var mobThreshold))
         {
             threshold = mobThreshold.Value;
-            if (HasComp<ActorComponent>(args.OtherEntity))
-                _adminLog.Add(LogType.Action, LogImpact.High, $"{ToPrettyString(args.OtherEntity):player} was struck by meteor {ToPrettyString(uid):ent} and killed instantly.");
+            if (HasComp<ActorComponent>(args.Target))
+                _adminLog.Add(LogType.Action, LogImpact.High, $"{ToPrettyString(args.Target):player} was struck by meteor {ToPrettyString(uid):ent} and killed instantly.");
         }
-        else if (_destructible.TryGetDestroyedAt(args.OtherEntity, out var destroyThreshold))
+        else if (_destructible.TryGetDestroyedAt(args.Target, out var destroyThreshold))
         {
             threshold = destroyThreshold.Value;
         }
@@ -46,7 +47,7 @@ public sealed class MeteorSystem : EntitySystem
         {
             threshold = FixedPoint2.MaxValue;
         }
-        var otherEntDamage = CompOrNull<DamageableComponent>(args.OtherEntity)?.TotalDamage ?? FixedPoint2.Zero;
+        var otherEntDamage = CompOrNull<DamageableComponent>(args.Target)?.TotalDamage ?? FixedPoint2.Zero;
         // account for the damage that the other entity has already taken: don't overkill
         threshold -= otherEntDamage;
 
@@ -57,10 +58,10 @@ public sealed class MeteorSystem : EntitySystem
         var trueDamage = FixedPoint2.Min(maxMeteorDamage, threshold);
 
         var damage = component.DamageTypes * trueDamage;
-        _damageable.TryChangeDamage(args.OtherEntity, damage, true, origin: uid);
+        _damageable.TryChangeDamage(args.Target, damage, true, origin: uid);
         _damageable.TryChangeDamage(uid, damage);
 
-        if (!TerminatingOrDeleted(args.OtherEntity))
-            component.HitList.Add(args.OtherEntity);
+        if (!TerminatingOrDeleted(args.Target))
+            component.HitList.Add(args.Target);
     }
 }
