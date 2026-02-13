@@ -4,12 +4,15 @@
   description: You prefer them when they're burning up in the atmosphere.
   abstract: true
   components:
+  - type: Pullable
+  - type: Reflective
   - type: Sprite
     noRot: false
     sprite: Objects/Misc/meteor.rsi
   - type: Projectile
     damage: {}
     deleteOnCollide: false
+  - type: ProjectilePenetrationOverride
   - type: Meteor
     damageTypes:
       types:
@@ -27,7 +30,7 @@
           !type:PhysShapeCircle
           radius: 0.4
         density: 100
-        hard: false
+        hard: true
         layer:
         - LargeMobLayer
         mask:
@@ -60,7 +63,7 @@
           !type:PhysShapeCircle
           radius: 0.45
         density: 100
-        hard: false
+        hard: true
         layer:
         - LargeMobLayer
         mask:
@@ -95,7 +98,7 @@
           !type:PhysShapeCircle
           radius: 0.25
         density: 100
-        hard: false
+        hard: true
         layer:
         - LargeMobLayer
         mask:
@@ -135,7 +138,7 @@
           !type:PhysShapeCircle
           radius: 0.3
         density: 100
-        hard: false
+        hard: true
         layer:
         - LargeMobLayer
         mask:
