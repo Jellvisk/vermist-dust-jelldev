@@ -2,6 +2,7 @@ using Content.Server.Administration.Logs;
 using Content.Server.Destructible;
 using Content.Server.Effects;
 using Content.Server.Weapons.Ranged.Systems;
+using Content.Shared._VDS.Projectiles;
 using Content.Shared.Camera;
 using Content.Shared.Damage;
 using Content.Shared.Damage.Components;
@@ -78,7 +79,7 @@ public sealed class ProjectileSystem : SharedProjectileSystem
         }
         else
         {
-            component.ProjectileSpent = true;
+            component.ProjectileSpent = !TryMultiPenetrate((uid, component));
         }
 
         if (!deleted)
@@ -98,8 +99,31 @@ public sealed class ProjectileSystem : SharedProjectileSystem
         }
     }
 
+    // VDS start
+    private bool TryMultiPenetrate(Entity<ProjectileComponent> projectile)
+    {
+        if (!TryComp<ProjectilePenetrationOverrideComponent>(projectile, out var penOverride))
+            return false;
+
+        // if max penetration is set to something above 0, use it and add to it. otherwise penetrate everything.
+        switch (penOverride.MaxPenetrations)
+        {
+            case > 0 when penOverride.CurrentPenetrationCount < penOverride.MaxPenetrations:
+                penOverride.CurrentPenetrationCount++;
+                return true;
+            case <= 0:
+                return true;
+        }
+
+        return false;
+    }
+    // VDS end
+
     private bool TryPenetrate(Entity<ProjectileComponent> projectile, DamageSpecifier damage, FixedPoint2 damageRequired)
     {
+        if (TryMultiPenetrate(projectile)) // VDS
+            return true;
+
         // If penetration is to be considered, we need to do some checks to see if the projectile should stop.
         if (projectile.Comp.PenetrationThreshold == 0)
             return false;
