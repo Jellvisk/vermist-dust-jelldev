@@ -7,9 +7,20 @@ namespace Content.Shared.Weapons.Ranged.Components;
 /// Can this entity be reflected.
 /// Only applies if it is shot like a projectile and not if it is thrown.
 /// </summary>
-[RegisterComponent, NetworkedComponent]
+[RegisterComponent, NetworkedComponent, AutoGenerateComponentState(fieldDeltas: true), AutoGenerateComponentPause]
 public sealed partial class ReflectiveComponent : Component
 {
     [ViewVariables(VVAccess.ReadWrite), DataField("reflective")]
     public ReflectType Reflective = ReflectType.NonEnergy;
+
+    /// <summary>
+    ///
+    /// </summary>
+    [DataField]
+    [AutoNetworkedField, AutoPausedField]
+    public TimeSpan? PhysicsCooldown;
+
+    [DataField]
+    [AutoNetworkedField, AutoPausedField]
+    public TimeSpan PhysicsCooldownEnd;
 }

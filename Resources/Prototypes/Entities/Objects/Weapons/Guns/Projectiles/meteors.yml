@@ -4,15 +4,13 @@
   description: You prefer them when they're burning up in the atmosphere.
   abstract: true
   components:
-  - type: Pullable
-  - type: Reflective
+  - type: Pullable # vds debug remember to remove
   - type: Sprite
     noRot: false
     sprite: Objects/Misc/meteor.rsi
   - type: Projectile
     damage: {}
     deleteOnCollide: false
-  - type: ProjectilePenetrationOverride
   - type: Meteor
     damageTypes:
       types:
@@ -48,6 +46,9 @@
     tileBreakScale: 2
   - type: TileFrictionModifier
     modifier: 0
+  - type: ProjectilePenetrationOverride # VDS
+  - type: Reflective # VDS
+    physicsCooldown: 0.3
 
 
 - type: entity
