@@ -44,12 +44,12 @@
       fix1:
         shape:
           !type:PhysShapeAabb
-            bounds: "-0.48,-0.5,0.48,-0.30"
+            bounds: "-0.48,-0.5,0.48,-0.28"
         mask:
         - FullTileMask
         layer:
-        - WallLayer
-        density: 6000
+        - SpecialWallLayer
+        density: 1000
   - type: Airtight
     noAirWhenFullyAirBlocked: false
     airBlockedDirection:
@@ -60,6 +60,3 @@
   - type: Anchorable
     flags:
     - Anchorable
-  - type: ContainmentField
-    throwForce: 800
-    destroyTrash: false

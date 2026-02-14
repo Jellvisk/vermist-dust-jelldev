@@ -111,23 +111,20 @@ public sealed class ReflectSystem : EntitySystem
             return false;
         }
 
-        if (reflector.Comp.PhysicsCooldown.HasValue
-            && reflector.Comp.PhysicsCooldown.)
+        if (reflective.PhysicsCooldown.HasValue // VDS if statement. moved uppset stream code to ReflectProjectile method.
+            && reflective.PhysicsCooldownEnd < _timing.CurTime)
         {
+            // adjust our cooldown
+            reflective.PhysicsCooldownEnd = _timing.CurTime + reflective.PhysicsCooldown.Value;
+            DirtyField(projectile.Owner, reflective, nameof(ReflectiveComponent.PhysicsCooldownEnd));
+
+            ReflectProjectile(reflector, user, projectile, physics);
         }
-        var rotation = _random.NextAngle(-reflector.Comp.Spread / 2, reflector.Comp.Spread / 2).Opposite();
-        var existingVelocity = _physics.GetMapLinearVelocity(projectile, component: physics);
-        var relativeVelocity = existingVelocity - _physics.GetMapLinearVelocity(user);
-        var newVelocity = rotation.RotateVec(relativeVelocity);
-
-        // Have the velocity in world terms above so need to convert it back to local.
-        var difference = newVelocity - existingVelocity;
-
-        _physics.SetLinearVelocity(projectile, physics.LinearVelocity + difference, body: physics);
-
-        var locRot = Transform(projectile).LocalRotation;
-        var newRot = rotation.RotateVec(locRot.ToVec());
-        _transform.SetLocalRotation(projectile, newRot.ToAngle());
+        else if (!reflective.PhysicsCooldown.HasValue)
+        {
+            // always reflect if the cooldown hasn't been set.
+            ReflectProjectile(reflector, user, projectile, physics);
+        }
 
         PlayAudioAndPopup(reflector.Comp, user);
 
@@ -146,6 +143,25 @@ public sealed class ReflectSystem : EntitySystem
 
         return true;
     }
+
+    // VDS, moved uppeststream code to this method. no changes otherwise.
+    private void ReflectProjectile(Entity<ReflectComponent> reflector, EntityUid user, Entity<ProjectileComponent?> projectile, PhysicsComponent physics)
+    {
+        var rotation = _random.NextAngle(-reflector.Comp.Spread / 2, reflector.Comp.Spread / 2).Opposite();
+        var existingVelocity = _physics.GetMapLinearVelocity(projectile, component: physics);
+        var relativeVelocity = existingVelocity - _physics.GetMapLinearVelocity(user);
+        var newVelocity = rotation.RotateVec(relativeVelocity);
+
+        // Have the velocity in world terms above so need to convert it back to local.
+        var difference = newVelocity - existingVelocity;
+
+        _physics.SetLinearVelocity(projectile, physics.LinearVelocity + difference, body: physics);
+
+        var locRot = Transform(projectile).LocalRotation;
+        var newRot = rotation.RotateVec(locRot.ToVec());
+        _transform.SetLocalRotation(projectile, newRot.ToAngle());
+    }
+
     private bool TryReflectHitscan(
         Entity<ReflectComponent> reflector,
         EntityUid user,

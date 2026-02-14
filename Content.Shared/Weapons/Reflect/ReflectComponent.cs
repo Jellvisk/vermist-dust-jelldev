@@ -2,7 +2,6 @@ using Content.Shared.Inventory;
 using Robust.Shared.Audio;
 using Robust.Shared.GameStates;
 using Robust.Shared.Serialization;
-using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom;
 
 namespace Content.Shared.Weapons.Reflect;
 
@@ -10,7 +9,7 @@ namespace Content.Shared.Weapons.Reflect;
 /// Entities with this component have a chance to reflect projectiles and hitscan shots
 /// Uses <c>ItemToggleComponent</c> to control reflection.
 /// </summary>
-[RegisterComponent, NetworkedComponent, AutoGenerateComponentState, AutoGenerateComponentPause]
+[RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
 public sealed partial class ReflectComponent : Component
 {
     /// <summary>
@@ -55,12 +54,6 @@ public sealed partial class ReflectComponent : Component
     /// </summary>
     [DataField]
     public SoundSpecifier? SoundOnReflect = new SoundPathSpecifier("/Audio/Weapons/Guns/Hits/laser_sear_wall.ogg", AudioParams.Default.WithVariation(0.05f));
-
-    /// <summary>
-    ///
-    /// </summary>
-    [DataField, AutoNetworkedField, AutoPausedField]
-    public TimeSpan? PhysicsCooldown;
 }
 
 /// <summary>
