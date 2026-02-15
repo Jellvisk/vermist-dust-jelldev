@@ -79,7 +79,7 @@ public sealed class ProjectileSystem : SharedProjectileSystem
         }
         else
         {
-            component.ProjectileSpent = !TryMultiPenetrate((uid, component));
+            component.ProjectileSpent = !TryMultiPenetrate((uid, component)); // VDS
         }
 
         if (!deleted)
