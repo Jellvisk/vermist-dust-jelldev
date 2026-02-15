@@ -14,13 +14,17 @@ public sealed partial class ReflectiveComponent : Component
     public ReflectType Reflective = ReflectType.NonEnergy;
 
     /// <summary>
-    ///
+    /// VDS - Optional cooldown on reflective physic changes.
+    /// This helps prevent the projectile from getting stuck in place if it hits two reflective entities at the same time.
     /// </summary>
     [DataField]
     [AutoNetworkedField, AutoPausedField]
     public TimeSpan? PhysicsCooldown;
 
-    [DataField]
+    /// <summary>
+    /// VDS - When we can be affected by reflect physics again.
+    /// </summary>
+    [ViewVariables(VVAccess.ReadOnly), DataField]
     [AutoNetworkedField, AutoPausedField]
     public TimeSpan PhysicsCooldownEnd;
 }
