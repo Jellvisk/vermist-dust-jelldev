@@ -1,6 +1,6 @@
 - type: entity
   id: HoloHangar
-  parent: BaseMachine
+  parent: [ BaseMachine ]
   name: holo hangar
   description: badass
   placement:
@@ -44,19 +44,73 @@
       fix1:
         shape:
           !type:PhysShapeAabb
+            bounds: "-0.48,-0.5,0.48,-0.40"
+        mask:
+        - TableMask
+        layer:
+        - TableLayer
+        density: 500
+      holo:
+        shape:
+          !type:PhysShapeAabb
             bounds: "-0.48,-0.5,0.48,-0.28"
         mask:
         - FullTileMask
         layer:
         - SpecialWallLayer
         density: 1000
+  - type: Anchorable
+    flags:
+    - Anchorable
+  - type: Rotatable
   - type: Airtight
     noAirWhenFullyAirBlocked: false
     airBlockedDirection:
       - South
   - type: Climbable
-  - type: Reflect
-    reflectProb: 1
-  - type: Anchorable
-    flags:
-    - Anchorable
+  - type: BlockWeather
+  - type: Battery
+    netsync: false
+    maxCharge: 1000
+    startingCharge: 0
+  - type: BatteryCharger
+    voltage: Medium
+  - type: PowerNetworkBattery
+    maxSupply: 100
+    maxChargeRate: 100
+  # - type: PowerCell
+  # - type: PowerCellDraw
+  - type: NodeContainer
+    examinable: true
+    nodes:
+      input:
+        !type:CableDeviceNode
+        nodeGroupID: MVPower
+  - type: ExaminableBattery
+  - type: DeviceNetwork
+    deviceNetId: Wireless
+    receiveFrequencyId: BasicDevice
+  - type: Lock
+    locked: true
+  - type: LockVisuals
+  - type: LockedAnchorable
+  - type: LockedWiresPanel
+  - type: AccessReader
+    access: [[ "Engineering" ]]
+  - type: WirelessNetworkConnection
+    range: 200
+  - type: LightningTarget
+    priority: 1
+  - type: HoloBarrier
+    drawRate: 50
+  - type: TriggerOnHurt
+  - type: TriggerOnCollide
+    fixtureID: holo
+  - type: AdjustBatteryChargeOnTrigger
+    powerAdjustment: -100
+    damagePowerScalar: -0.9
+  - type: DeviceLinkSink
+    ports:
+      - On
+      - Off
+      - Toggle
