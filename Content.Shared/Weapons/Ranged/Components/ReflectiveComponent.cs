@@ -1,5 +1,6 @@
 using Content.Shared.Weapons.Reflect;
 using Robust.Shared.GameStates;
+using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom;
 
 namespace Content.Shared.Weapons.Ranged.Components;
 
@@ -19,12 +20,12 @@ public sealed partial class ReflectiveComponent : Component
     /// </summary>
     [DataField]
     [AutoNetworkedField, AutoPausedField]
-    public TimeSpan? PhysicsCooldown;
+    public TimeSpan? UpdateInterval;
 
     /// <summary>
     /// VDS - When we can be affected by reflect physics again.
     /// </summary>
-    [ViewVariables(VVAccess.ReadOnly), DataField]
+    [DataField(customTypeSerializer: typeof(TimeOffsetSerializer))]
     [AutoNetworkedField, AutoPausedField]
-    public TimeSpan PhysicsCooldownEnd;
+    public TimeSpan NextUpdate = TimeSpan.Zero;
 }
