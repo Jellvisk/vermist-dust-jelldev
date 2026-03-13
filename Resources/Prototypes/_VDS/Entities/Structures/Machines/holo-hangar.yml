@@ -45,21 +45,21 @@
       fix1:
         shape:
           !type:PhysShapeAabb
-            bounds: "-0.48,-0.5,0.48,-0.40"
+            bounds: "-0.48,-0.5,0.48,-0.30"
         mask:
         - TableMask
         layer:
         - TableLayer
         density: 500
+        hard: true
       holo:
         shape:
           !type:PhysShapeAabb
             bounds: "-0.48,-0.5,0.48,-0.28"
         mask:
-        - FullTileMask
-        layer:
-        - SpecialWallLayer
-        density: 1000
+        - DoorPassable
+        hard: false
+        density: 0
   - type: Anchorable
     flags:
     - Anchorable
@@ -77,7 +77,6 @@
   - type: BatteryCharger
     voltage: Medium
   - type: PowerNetworkBattery
-    maxSupply: 100
     maxChargeRate: 100
   # - type: PowerCell
   # - type: PowerCellDraw
@@ -102,16 +101,36 @@
     range: 200
   - type: LightningTarget
     priority: 1
-  - type: HoloBarrier
-    drawRate: 50
-  - type: TriggerOnHurt
-  - type: TriggerOnCollide
-    fixtureID: holo
-  - type: AdjustBatteryChargeOnTrigger
-    powerAdjustment: -100
-    damagePowerScalar: -0.9
+  # - type: HoloBarrier
+  #   drawRate: 50
+  #   fixtureID: holo
   - type: DeviceLinkSink
     ports:
       - On
       - Off
       - Toggle
+  - type: IsPoweredTriggerCondition
+    keys:
+    - hit
+  - type: TriggerOnHurt
+    keyOut: hit
+  - type: TriggerOnCollide
+    fixtureID: holo
+    keyOut: hit
+  - type: AdjustBatteryChargeOnTrigger
+    powerAdjustment: -100
+    damagePowerScalar: -0.9
+    keysIn:
+    - hit
+  - type: TriggerOnPowerChanged
+    keyOut: power
+  - type: ToggleComponentsOnTrigger
+    keysIn:
+    - power
+    components:
+    - type: Reflect
+      reflects:
+      - Energy
+      - NonEnergy
+      - Meteor
+    - type: ChargedReflect
