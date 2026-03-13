@@ -73,7 +73,7 @@ public sealed partial class BatteryComponent : Component
     /// Not a datafield as this is only cached and recalculated in an update loop.
     /// </remarks>
     [ViewVariables, AutoNetworkedField]
-    public BatteryState State = BatteryState.Neither;
+    public BatteryState State = BatteryState.Empty; // VDS changed from Neither... to allow it to update its real state on MapInit
 }
 
 /// <summary>
