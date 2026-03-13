@@ -48,6 +48,8 @@
     modifier: 0
   - type: ProjectilePenetrationOverride # VDS
   - type: Reflective # VDS
+    reflective:
+    - Meteor
     physicsCooldown: 0.3
 
 

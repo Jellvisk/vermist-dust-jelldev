@@ -9,7 +9,7 @@ namespace Content.Shared.Weapons.Reflect;
 /// Entities with this component have a chance to reflect projectiles and hitscan shots
 /// Uses <c>ItemToggleComponent</c> to control reflection.
 /// </summary>
-[RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
+[RegisterComponent, NetworkedComponent, AutoGenerateComponentState(fieldDeltas: true)] // VDS fieldDeltas to true.
 public sealed partial class ReflectComponent : Component
 {
     /// <summary>
@@ -66,4 +66,5 @@ public enum ReflectType : byte
     None = 0,
     NonEnergy = 1 << 0,
     Energy = 1 << 1,
+    Meteor = 1 << 2, // VDS
 }
