@@ -111,20 +111,11 @@ public sealed class ReflectSystem : EntitySystem
             return false;
         }
 
-        if (reflective.PhysicsCooldown.HasValue // VDS if statement. moved uppset stream code to ReflectProjectile method.
-            && reflective.PhysicsCooldownEnd < _timing.CurTime)
-        {
-            // adjust our cooldown
-            reflective.PhysicsCooldownEnd = _timing.CurTime + reflective.PhysicsCooldown.Value;
-            DirtyField(projectile.Owner, reflective, nameof(ReflectiveComponent.PhysicsCooldownEnd));
+        // VDS if statement/method. moved uppset stream code to ReflectProjectile method.
+        if (!CanReflect(projectile, reflective))
+            return false;
 
-            ReflectProjectile(reflector, user, projectile, physics);
-        }
-        else if (!reflective.PhysicsCooldown.HasValue)
-        {
-            // always reflect if the cooldown hasn't been set.
-            ReflectProjectile(reflector, user, projectile, physics);
-        }
+        ReflectProjectile(reflector, user, projectile, physics);
 
         PlayAudioAndPopup(reflector.Comp, user);
 
@@ -142,6 +133,30 @@ public sealed class ReflectSystem : EntitySystem
         }
 
         return true;
+    }
+
+    // VDS
+    private bool CanReflect(Entity<ProjectileComponent?> projectile, ReflectiveComponent reflective)
+    {
+        if (reflective.UpdateInterval.HasValue)
+        {
+            var curTime = _timing.CurTime;
+
+            if (reflective.NextUpdate > curTime)
+            {
+                // adjust our cooldown
+                reflective.NextUpdate += reflective.UpdateInterval.Value;
+                DirtyField(projectile.Owner, reflective, nameof(ReflectiveComponent.NextUpdate));
+
+                return true;
+            }
+            return false;
+        }
+        else
+        {
+            // always reflect if the cooldown hasn't been set.
+            return true;
+        }
     }
 
     // VDS, moved uppeststream code to this method. no changes otherwise.
@@ -231,7 +246,7 @@ public sealed class ReflectSystem : EntitySystem
     {
         // This isn't examine verb or something just because it looks too much bad.
         // Trust me, universal verb for the potential weapons, armor and walls looks awful.
-        var value = MathF.Round(ent.Comp.ReflectProb * 100, 1);
+        var value = Math.Round(ent.Comp.ReflectProb * 100, 2);
 
         if (!_toggle.IsActivated(ent.Owner) || value == 0 || ent.Comp.Reflects == ReflectType.None)
             return;
