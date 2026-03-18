@@ -1,7 +1,7 @@
 - type: entity
-  id: HoloHangar
+  id: HoloBarrier
   parent: [ BaseMachine ]
-  name: holo hangar
+  name: holo barrier
   description: badass
   placement:
     mode: SnapgridCenter
@@ -12,8 +12,13 @@
     anchored: true
     noRot: false
   - type: Sprite
-    sprite: _VDS/Structures/Machines/holo_hangar.rsi
-    state: dirtest
+    sprite: _VDS/Structures/Machines/holo_barrier.rsi
+    layers:
+    - state: base
+    - state: holo_barrier_wall
+    - state: holo_barrier_top
+      offset: "0.59,0"
+  - type: AnimationPlayer
   - type: Appearance
   - type: Damageable
     damageContainer: StructuralInorganic
