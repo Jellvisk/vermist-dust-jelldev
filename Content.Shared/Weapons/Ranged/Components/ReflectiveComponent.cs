@@ -19,8 +19,7 @@ public sealed partial class ReflectiveComponent : Component
     /// This helps prevent the projectile from getting stuck in place if it hits two reflective entities at the same time.
     /// </summary>
     [DataField]
-    [AutoNetworkedField, AutoPausedField]
-    public TimeSpan? UpdateInterval;
+    public TimeSpan UpdateInterval = TimeSpan.FromMilliseconds(200);
 
     /// <summary>
     /// VDS - When we can be affected by reflect physics again.
@@ -28,4 +27,7 @@ public sealed partial class ReflectiveComponent : Component
     [DataField(customTypeSerializer: typeof(TimeOffsetSerializer))]
     [AutoNetworkedField, AutoPausedField]
     public TimeSpan NextUpdate = TimeSpan.Zero;
+
+    [ViewVariables(VVAccess.ReadOnly)]
+    public bool CanReflectCollideTrigger = true;
 }

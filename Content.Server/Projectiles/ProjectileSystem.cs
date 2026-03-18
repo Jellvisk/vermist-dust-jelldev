@@ -10,6 +10,8 @@ using Content.Shared.Damage.Systems;
 using Content.Shared.Database;
 using Content.Shared.FixedPoint;
 using Content.Shared.Projectiles;
+using Content.Shared.Trigger.Systems;
+using Content.Shared.Weapons.Reflect;
 using Robust.Shared.Physics.Events;
 using Robust.Shared.Player;
 
@@ -27,7 +29,7 @@ public sealed class ProjectileSystem : SharedProjectileSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ProjectileComponent, StartCollideEvent>(OnStartCollide);
+        SubscribeLocalEvent<ProjectileComponent, StartCollideEvent>(OnStartCollide, before: [typeof(TriggerSystem)]);
     }
 
     private void OnStartCollide(EntityUid uid, ProjectileComponent component, ref StartCollideEvent args)
