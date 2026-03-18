@@ -50,6 +50,15 @@ public sealed class ReflectSystem : EntitySystem
         SubscribeLocalEvent<ReflectComponent, GotEquippedHandEvent>(OnReflectHandEquipped);
         SubscribeLocalEvent<ReflectComponent, GotUnequippedHandEvent>(OnReflectHandUnequipped);
         SubscribeLocalEvent<ReflectComponent, ExaminedEvent>(OnExamine);
+
+        SubscribeLocalEvent<ReflectiveComponent, MapInitEvent>(OnReflectiveMapInit); // VDS
+    }
+
+    // VDS
+    private void OnReflectiveMapInit(Entity<ReflectiveComponent> ent, ref MapInitEvent args)
+    {
+        ent.Comp.NextUpdate = _timing.CurTime;
+        DirtyField(ent.Owner, ent.Comp, nameof(ReflectiveComponent.NextUpdate));
     }
 
     private void OnReflectUserCollide(Entity<ReflectComponent> ent, ref ProjectileReflectAttemptEvent args)
@@ -113,7 +122,12 @@ public sealed class ReflectSystem : EntitySystem
 
         // VDS if statement/method. moved uppset stream code to ReflectProjectile method.
         if (!CanReflect(projectile, reflective))
+        {
+            reflective.CanReflectCollideTrigger = false;
             return false;
+        }
+
+        reflective.CanReflectCollideTrigger = true; // VDS
 
         ReflectProjectile(reflector, user, projectile, physics);
 
@@ -138,25 +152,16 @@ public sealed class ReflectSystem : EntitySystem
     // VDS
     private bool CanReflect(Entity<ProjectileComponent?> projectile, ReflectiveComponent reflective)
     {
-        if (reflective.UpdateInterval.HasValue)
-        {
-            var curTime = _timing.CurTime;
+        var curTime = _timing.CurTime;
 
-            if (reflective.NextUpdate > curTime)
-            {
-                // adjust our cooldown
-                reflective.NextUpdate += reflective.UpdateInterval.Value;
-                DirtyField(projectile.Owner, reflective, nameof(ReflectiveComponent.NextUpdate));
-
-                return true;
-            }
+        if (curTime < reflective.NextUpdate)
             return false;
-        }
-        else
-        {
-            // always reflect if the cooldown hasn't been set.
-            return true;
-        }
+
+        // adjust our cooldown
+        reflective.NextUpdate += reflective.UpdateInterval;
+        DirtyField(projectile.Owner, reflective, nameof(ReflectiveComponent.NextUpdate));
+
+        return true;
     }
 
     // VDS, moved uppeststream code to this method. no changes otherwise.

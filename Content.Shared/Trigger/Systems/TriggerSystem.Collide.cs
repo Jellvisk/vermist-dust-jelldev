@@ -1,6 +1,8 @@
-﻿using Content.Shared.Trigger.Components.Triggers;
+using Content.Shared.Trigger.Components.Triggers;
 using Content.Shared.StepTrigger.Systems;
 using Robust.Shared.Physics.Events;
+using Content.Shared.Weapons.Reflect;
+using Content.Shared.Weapons.Ranged.Components;
 
 namespace Content.Shared.Trigger.Systems;
 
@@ -24,6 +26,11 @@ public sealed partial class TriggerSystem
             && (ent.Comp.MaxTriggers == null || ent.Comp.MaxTriggers > 0)
         )
         {
+            if (TryComp<ReflectiveComponent>(ent, out var reflective)
+                && HasComp<ReflectComponent>(args.OtherEntity)
+                && reflective.CanReflectCollideTrigger)
+                return;
+
             if (ent.Comp.MaxTriggers != null)
             {
                 ent.Comp.MaxTriggers--;
