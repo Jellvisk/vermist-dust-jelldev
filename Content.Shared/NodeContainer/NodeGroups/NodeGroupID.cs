@@ -17,4 +17,9 @@ public enum NodeGroupID : byte
     /// <seealso cref="Content.Server.Power.Generation.Teg.TegNodeGroup"/>
     Teg,
     ExCable,
+
+    // VDS start - why are nodegroups like this?
+    HoloBarrier,
+
+    // VDS end
 }

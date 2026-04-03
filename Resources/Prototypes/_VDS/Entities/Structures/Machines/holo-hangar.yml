@@ -12,12 +12,11 @@
     anchored: true
     noRot: false
   - type: Sprite
-    sprite: _VDS/Structures/Machines/holo_barrier.rsi
+    drawdepth: Mobs
+    noRot: true
     layers:
-    - state: base
-    - state: holo_barrier_wall
-    - state: holo_barrier_top
-      offset: "0.59,0"
+    - sprite: _VDS/Structures/Machines/HoloBarrier/base.rsi
+      state: base
   - type: AnimationPlayer
   - type: Appearance
   - type: Damageable
@@ -68,12 +67,16 @@
     maxChargeRate: 100
   # - type: PowerCell
   # - type: PowerCellDraw
+  - type: HoloBarrier
   - type: NodeContainer
     examinable: true
     nodes:
       input:
         !type:CableDeviceNode
-        nodeGroupID: MVPower
+        nodeGroupIf: MVPower
+      holobarrier:
+        !type:AdjacentNode
+        nodeGroupID: HoloBarrier
   - type: ExaminableBattery
   - type: DeviceNetwork
     deviceNetId: Wireless
@@ -140,3 +143,35 @@
         - South
     - type: Climbable
     - type: BlockWeather
+
+
+
+- type: entity
+  id: HoloBarrierController
+  parent: [BaseMachine]
+  name: holo barrier controller
+  description: badass 2
+  placement:
+    mode: SnapgridCenter
+  components:
+  - type: Physics
+    bodyType: Static
+  - type: Transform
+    anchored: true
+    noRot: false
+  - type: Sprite
+    drawdepth: Mobs
+    noRot: true
+    layers:
+    - sprite: _VDS/Structures/Machines/HoloBarrier/base.rsi
+      state: base
+  - type: Anchorable
+    flags:
+    - Anchorable
+  - type: HoloBarrierController
+  - type: NodeContainer
+    examinable: true
+    nodes:
+      holobarrier:
+        !type:AdjacentNode
+        nodeGroupID: HoloBarrier
