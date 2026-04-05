@@ -8,5 +8,5 @@ public sealed partial class HoloBarrierControllerComponent : Component
     /// The entities that this source has control over.
     /// </summary>
     [ViewVariables(VVAccess.ReadOnly)]
-    public HashSet<Entity<HoloBarrierComponent>> Members = [];
+    public HashSet<EntityUid> Members = [];
 }

@@ -6,7 +6,7 @@ public sealed partial class HoloBarrierComponent : Component
     [DataField]
     public bool RequiresController = true;
 
-    [DataField]
-    public EntityUid? Controller;
+    [ViewVariables(VVAccess.ReadOnly)]
+    public EntityUid Controller;
 
 }
