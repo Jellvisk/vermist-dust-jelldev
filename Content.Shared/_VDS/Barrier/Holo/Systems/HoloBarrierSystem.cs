@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Numerics;
 using Content.Shared._VDS.Physics;
+using Content.Shared.NodeContainer;
 using Content.Shared.Physics;
 using Robust.Shared.Physics.Systems;
 using Robust.Shared.Utility;
@@ -27,16 +28,13 @@ public sealed partial class HoloBarrierSystem : EntitySystem
     /// <summary>
     /// Iterates through our holobarriers and deletes invalid ones.
     /// </summary>
-    public void UpdateHoloBarriers(HashSet<Entity<HoloBarrierComponent>> barriers, Entity<HoloBarrierControllerComponent>? controller = null)
+    public bool ValidateHoloBarrier(Entity<HoloBarrierComponent> barrier)
     {
-        foreach (var barrier in barriers)
-        {
-            barrier.Comp.Controller = controller;
-            if (IsValidHoloBarrier(barrier))
-                continue;
+        if (IsValidHoloBarrier(barrier))
+            return true;
 
-            PredictedQueueDel(barrier);
-        }
+        PredictedQueueDel(barrier);
+        return false;
     }
 
     public bool IsValidHoloBarrier(Entity<HoloBarrierComponent> barrier)
@@ -44,7 +42,10 @@ public sealed partial class HoloBarrierSystem : EntitySystem
         if (TerminatingOrDeleted(barrier))
             return false;
 
-        if (barrier.Comp.RequiresController && barrier.Comp.Controller.HasValue)
+        if (barrier.Comp.Controller.IsValid() || TerminatingOrDeleted(barrier.Comp.Controller))
+            return false;
+
+        if (barrier.Comp.RequiresController)
             return CheckBehindForController(barrier);
 
         return true;
