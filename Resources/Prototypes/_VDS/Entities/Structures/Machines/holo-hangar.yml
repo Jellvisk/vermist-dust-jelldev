@@ -1,8 +1,90 @@
 - type: entity
-  id: HoloBarrier
+  id: PulverisBarrier
+  parent: BaseStructure
+  name: pulveris barrier
+  description: You can't quite make out what's inside, and you can never seem to properly touch it.
+  placement:
+    mode: SnapgridCenter
+  components:
+  # - type: Transform
+  #   noRot: false
+  - type: Sprite
+    drawdepth: Mobs
+    noRot: true
+    layers:
+    - sprite: _VDS/Structures/Machines/PulverisBarrier/barrier.rsi
+      state: barrier
+  - type: AnimationPlayer
+  - type: SyncSprite
+  - type: Appearance
+  - type: Airtight
+  - type: Fixtures
+    fixtures:
+      fix1:
+        shape:
+          !type:PhysShapeAabb
+          bounds: "-0.45,-0.45,0.45,0.45"
+        layer:
+        - DoorPassable
+        density: 0
+  - type: SpeedModifierContacts
+    walkSpeedModifier: 0.3
+    sprintSpeedModifier: 0.3
+  - type: BlockWeather
+  - type: Battery
+    netsync: false
+    maxCharge: 1000
+    startingCharge: 1000
+  - type: PowerNetworkBattery
+    maxChargeRate: 100
+  - type: PowerCell
+  - type: PowerCellDraw
+    drawRate: 10
+  - type: PulverisBarrier
+  - type: NodeContainer
+    examinable: true
+    nodes:
+      barrier:
+        !type:DirectionalNode
+        nodeGroupID: PulverisBarrier
+        openDirections:
+          - North
+          - South
+  - type: LightningTarget
+    priority: 1
+  - type: Reflect
+    reflects:
+    - Energy
+    - NonEnergy
+    - Meteor
+  # triggers
+  - type: ChargedReflect
+  - type: TriggerOnHurt
+    keyOut: hit
+  - type: TriggerOnCollide
+    ignoreOtherNonHard: false
+    fixtureID: fix1
+    keyOut: hit
+  - type: AdjustBatteryChargeOnTrigger
+    powerAdjustment: -100
+    damagePowerScalar: -0.9
+    keysIn:
+    - hit
+  # - type: TriggerOnPowerChanged
+  #   keyOut: power
+  # # while triggered:
+  # - type: ToggleComponentsOnTrigger
+  #   keysIn:
+  #   - power
+  #   components:
+
+
+
+- type: entity
+  id: PulverisBarrierController
   parent: [ BaseMachine ]
-  name: holo barrier
-  description: badass
+  name: pulveris barrier controller
+  description: A hefty machine capable of revealing an ultra-pressurized tear in reality.
   placement:
     mode: SnapgridCenter
   components:
@@ -15,48 +97,27 @@
     drawdepth: Mobs
     noRot: true
     layers:
-    - sprite: _VDS/Structures/Machines/HoloBarrier/base.rsi
-      state: base
-  - type: AnimationPlayer
-  - type: Appearance
-  - type: Damageable
-    damageContainer: StructuralInorganic
-    damageModifierSet: StructuralMetallicStrong
-  - type: Destructible
-    thresholds:
-    - trigger:
-        !type:DamageTrigger
-        damage: 600
-      behaviors:
-      - !type:DoActsBehavior
-        acts: ["Destruction"]
-      - !type:PlaySoundBehavior
-        sound:
-          collection: MetalSlam
-    - trigger:
-        !type:DamageTrigger
-        damage: 400
-      behaviors:
-      - !type:PlaySoundBehavior
-        sound:
-          collection: MetalSlam
-      - !type:ChangeConstructionNodeBehavior
-        node: girder
-      - !type:DoActsBehavior
-        acts: ["Destruction"]
-  - type: Fixtures
-    fixtures:
-      fix1:
-        shape:
-          !type:PhysShapeAabb
-            bounds: "-0.48,-0.5,0.48,-0.30"
-        layer:
-        - DoorPassable
-        density: 500
-  - type: Anchorable
-    flags:
-    - Anchorable
+    - sprite: _VDS/Structures/Machines/PulverisBarrier/machine.rsi
+      state: machine
   - type: Rotatable
+  - type: Anchorable
+  - type: PulverisBarrierController
+  - type: NodeContainer
+    examinable: true
+    nodes:
+      input:
+        !type:CableDeviceNode
+        nodeGroupID: MVPower
+      barrier:
+        !type:DirectionalNode
+        nodeGroupID: PulverisBarrier
+        openDirections:
+          - North
+  - type: DeviceLinkSink
+    ports:
+      - On
+      - Off
+      - Toggle
   - type: Battery
     netsync: false
     maxCharge: 1000
@@ -65,22 +126,7 @@
     voltage: Medium
   - type: PowerNetworkBattery
     maxChargeRate: 100
-  # - type: PowerCell
-  # - type: PowerCellDraw
-  - type: HoloBarrier
-  - type: NodeContainer
-    examinable: true
-    nodes:
-      input:
-        !type:CableDeviceNode
-        nodeGroupIf: MVPower
-      holobarrier:
-        !type:AdjacentNode
-        nodeGroupID: HoloBarrier
   - type: ExaminableBattery
-  - type: DeviceNetwork
-    deviceNetId: Wireless
-    receiveFrequencyId: BasicDevice
   - type: Lock
     locked: true
   # - type: LockVisuals
@@ -90,88 +136,3 @@
     access: [[ "Engineering" ]]
   - type: WirelessNetworkConnection
     range: 200
-  - type: LightningTarget
-    priority: 1
-  - type: DeviceLinkSink
-    ports:
-      - On
-      - Off
-      - Toggle
-  - type: PowerCellDraw
-    drawRate: 50
-  # triggers
-  - type: IsPoweredTriggerCondition
-    keys:
-    - hit
-  - type: TriggerOnHurt
-    keyOut: hit
-  - type: TriggerOnCollide
-    ignoreOtherNonHard: false
-    fixtureID: holo
-    keyOut: hit
-  - type: AdjustBatteryChargeOnTrigger
-    powerAdjustment: -100
-    damagePowerScalar: -0.9
-    keysIn:
-    - hit
-  - type: TriggerOnPowerChanged
-    keyOut: power
-  # while triggered:
-  - type: ToggleComponentsOnTrigger
-    keysIn:
-    - power
-    components:
-    - type: Reflect
-      reflects:
-      - Energy
-      - NonEnergy
-      - Meteor
-    - type: ChargedReflect
-    - type: FixturesChange
-      fixtures:
-        holo:
-          shape:
-            !type:PhysShapeAabb
-              bounds: "-0.48,-0.5,0.48,-0.28"
-          layer:
-          - SpecialWallLayer
-          hard: true
-          density: 1000
-    - type: Airtight
-      noAirWhenFullyAirBlocked: false
-      airBlockedDirection:
-        - South
-    - type: Climbable
-    - type: BlockWeather
-
-
-
-- type: entity
-  id: HoloBarrierController
-  parent: [BaseMachine]
-  name: holo barrier controller
-  description: badass 2
-  placement:
-    mode: SnapgridCenter
-  components:
-  - type: Physics
-    bodyType: Static
-  - type: Transform
-    anchored: true
-    noRot: false
-  - type: Sprite
-    drawdepth: Mobs
-    noRot: true
-    layers:
-    - sprite: _VDS/Structures/Machines/HoloBarrier/base.rsi
-      state: base
-  - type: Anchorable
-    flags:
-    - Anchorable
-  - type: HoloBarrierController
-  - type: NodeContainer
-    examinable: true
-    nodes:
-      holobarrier:
-        !type:AdjacentNode
-        nodeGroupID: HoloBarrier

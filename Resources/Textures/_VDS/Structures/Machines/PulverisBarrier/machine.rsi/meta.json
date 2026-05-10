@@ -3,12 +3,12 @@
   "license": "CC-BY-SA-3.0",
   "copyright": "Made by Jellvisk",
   "size": {
-    "x": 32,
-    "y": 32
+    "x": 48,
+    "y": 48
   },
   "states": [
     {
-      "name": "base",
+      "name": "machine",
       "directions": 4
     }
   ]
