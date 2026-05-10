@@ -2,7 +2,7 @@ namespace Content.Shared._VDS.Barrier;
 
 [RegisterComponent]
 [Serializable]
-public sealed partial class HoloBarrierControllerComponent : Component
+public sealed partial class PulverisBarrierControllerComponent : Component
 {
     /// <summary>
     /// The entities that this source has control over.
