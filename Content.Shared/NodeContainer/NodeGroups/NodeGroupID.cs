@@ -19,7 +19,7 @@ public enum NodeGroupID : byte
     ExCable,
 
     // VDS start - why are nodegroups like this?
-    HoloBarrier,
+    PulverisBarrier,
 
     // VDS end
 }
