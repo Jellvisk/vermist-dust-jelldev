@@ -9,12 +9,13 @@ using Robust.Shared.Utility;
 
 namespace Content.Shared._VDS.Barrier.Pulveris.Systems;
 
-public sealed class PulverisBarrierSystem : EntitySystem
+public abstract class SharedPulverisBarrierSystem : EntitySystem
 {
     [Dependency] private readonly ReflectiveRaycastSystem _raycastSystem = default!;
     [Dependency] private readonly SharedTransformSystem _transformSystem = default!;
     [Dependency] private readonly RayCastSystem _rayCast = default!;
     [Dependency] private readonly SharedPowerReceiverSystem _powerReceiverSystem = default!;
+
 
     private EntityQuery<PulverisBarrierComponent> _holoQuery;
     private EntityQuery<PulverisBarrierControllerComponent> _holoControllerQuery;
@@ -30,12 +31,12 @@ public sealed class PulverisBarrierSystem : EntitySystem
     /// <summary>
     /// Iterates through our barriers and deletes invalid ones.
     /// </summary>
-    public bool ValidateBarrier(Entity<PulverisBarrierComponent> barrier)
+    public bool TryUpdateBarrier(Entity<PulverisBarrierComponent> barrier)
     {
         if (TerminatingOrDeleted(barrier))
             return false;
 
-        if (IsValidBarrier(barrier))
+        if (TryValidateBarrier(barrier))
             return true;
 
         TryQueueDel(barrier);
@@ -43,7 +44,7 @@ public sealed class PulverisBarrierSystem : EntitySystem
         return false;
     }
 
-    public bool IsValidBarrier(Entity<PulverisBarrierComponent> barrier)
+    public virtual bool TryValidateBarrier(Entity<PulverisBarrierComponent> barrier, NodeContainerComponent? nodeContainer = null)
     {
 
         if (barrier.Comp.RequiresController && barrier.Comp.Controllers.Count == 0)
@@ -52,8 +53,7 @@ public sealed class PulverisBarrierSystem : EntitySystem
         if (barrier.Comp.RequiresPower && !_powerReceiverSystem.IsPowered(barrier.Owner))
             return false;
 
-        // if (barrier.Comp.RequiresController)
-        //     return CheckBehindForController(barrier);
+        // rest is handled by the server
 
         return true;
     }
