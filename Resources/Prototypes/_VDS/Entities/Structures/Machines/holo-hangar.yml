@@ -96,9 +96,20 @@
   - type: Sprite
     drawdepth: Mobs
     noRot: true
+    sprite: _VDS/Structures/Machines/PulverisBarrier/controller.rsi
     layers:
-    - sprite: _VDS/Structures/Machines/PulverisBarrier/machine.rsi
-      state: machine
+      - state: controller
+      - state: connected
+        map: ["connectedLayer"]
+  - type: Appearance
+  - type: AnimationPlayer
+  - type: SyncSprite
+  - type: GenericVisualizer
+    visuals:
+      enum.PulverisBarrierControllerVisuals.Connected:
+        connectedLayer:
+          True: {visible: true}
+          False: {visible: false}
   - type: Rotatable
   - type: Anchorable
   - type: PulverisBarrierController
@@ -136,3 +147,9 @@
     access: [[ "Engineering" ]]
   - type: WirelessNetworkConnection
     range: 200
+  - type: ActivatableUI
+    key: enum.PulverisBarrierControllerUiKey.Key
+  - type: UserInterface
+    interfaces:
+        enum.PulverisBarrierControllerUiKey.Key:
+          type: PulverisBarrierControllerBoundUserInterface

@@ -1,9 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Numerics;
 using Content.Server.NodeContainer.NodeGroups;
-using Content.Server.NodeContainer.Nodes;
 using Content.Shared._VDS.Barrier;
 using Content.Shared._VDS.Barrier.Pulveris.Systems;
+using Content.Shared.FixedPoint;
 using Content.Shared.NodeContainer;
 using Content.Shared.NodeContainer.NodeGroups;
 using Robust.Shared.Map.Components;
@@ -15,6 +14,7 @@ public sealed class PulverisBarrierNodeGroup : BaseNodeGroup
 {
     [Dependency]
     private readonly IEntityManager _entMan = default!;
+
     private EntityQuery<PulverisBarrierComponent> _barrierQuery;
     private EntityQuery<PulverisBarrierControllerComponent> _barrierControllerQuery;
     private EntityQuery<TransformComponent> _xformQuery;
@@ -44,6 +44,7 @@ public sealed class PulverisBarrierNodeGroup : BaseNodeGroup
         _barrierQuery = entMan.GetEntityQuery<PulverisBarrierComponent>();
         _barrierControllerQuery = entMan.GetEntityQuery<PulverisBarrierControllerComponent>();
         _xformQuery = entMan.GetEntityQuery<TransformComponent>();
+
     }
 
     public override void LoadNodes(List<Node> groupNodes)
@@ -66,7 +67,7 @@ public sealed class PulverisBarrierNodeGroup : BaseNodeGroup
 
         if (Barriers.Count > 0)
         {
-            var pulverBarrierSys = _entMan.System<PulverisBarrierSystem>();
+            var pulverBarrierSys = _entMan.System<SharedPulverisBarrierSystem>();
 
             foreach (var barrier in Barriers)
             {
@@ -75,14 +76,28 @@ public sealed class PulverisBarrierNodeGroup : BaseNodeGroup
 
                 barrierComp.Controllers = Controllers;
 
-                if (pulverBarrierSys.ValidateBarrier((barrier, barrierComp)))
+                if (pulverBarrierSys.TryUpdateBarrier((barrier, barrierComp)))
                     continue;
 
                 Barriers.Remove(barrier);
             }
+
+        }
+        if (Controllers.Count > 0)
+        {
+            var pulverBarrierControllerSys = _entMan.System<SharedPulverisBarrierControllerSystem>();
+
+            foreach (var controller in Controllers)
+            {
+                if (!_barrierControllerQuery.TryComp(controller, out var controllerComp))
+                    continue;
+
+                controllerComp.Connected = Barriers.Count > 0;
+                pulverBarrierControllerSys.TryUpdateAppearance(controller);
+            }
+
         }
     }
-
     private bool IsValidController([NotNullWhen(true)] Entity<PulverisBarrierControllerComponent>? controller)
     {
         if (!controller.HasValue)
