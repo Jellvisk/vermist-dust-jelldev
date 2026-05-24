@@ -1,0 +1,15 @@
+<controls:FancyWindow xmlns="https://spacestation14.io"
+                xmlns:controls="clr-namespace:Content.Client.UserInterface.Controls"
+                Title="{Loc 'pulveris-barrier-controller-ui-title'}"
+
+                Resizable="False">
+    <GridContainer Columns="2">
+        <BoxContainer VerticalExpand="True"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      Margin="0 10">
+            <Button Name="ToggleButton"
+                    Text="test"></Button>
+        </BoxContainer>
+    </GridContainer>
+</controls:FancyWindow>

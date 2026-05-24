@@ -10,5 +10,8 @@ public sealed partial class PulverisBarrierComponent : Component
     public bool RequiresPower = true;
 
     [DataField]
+    public bool RequiresConnections = true;
+
+    [DataField]
     public HashSet<EntityUid> Controllers = [];
 }
