@@ -6,14 +6,16 @@
   placement:
     mode: SnapgridCenter
   components:
-  # - type: Transform
-  #   noRot: false
   - type: Sprite
-    drawdepth: Mobs
     noRot: true
+    drawdepth: Mobs
     layers:
     - sprite: _VDS/Structures/Machines/PulverisBarrier/barrier.rsi
       state: barrier
+      shader: unshaded
+  - type: Transform
+    anchored: true
+    noRot: false
   - type: AnimationPlayer
   - type: SyncSprite
   - type: Appearance
@@ -26,10 +28,13 @@
           bounds: "-0.45,-0.45,0.45,0.45"
         layer:
         - DoorPassable
+        mask:
+        - FullTileMask
         density: 0
+        hard: true
   - type: SpeedModifierContacts
-    walkSpeedModifier: 0.3
-    sprintSpeedModifier: 0.3
+    walkSpeedModifier: 0.2
+    sprintSpeedModifier: 0.2
   - type: BlockWeather
   - type: Battery
     netsync: false
@@ -57,8 +62,9 @@
     - Energy
     - NonEnergy
     - Meteor
-  # triggers
   - type: ChargedReflect
+  # triggers
+  # hit trigger:
   - type: TriggerOnHurt
     keyOut: hit
   - type: TriggerOnCollide
@@ -70,13 +76,12 @@
     damagePowerScalar: -0.9
     keysIn:
     - hit
-  # - type: TriggerOnPowerChanged
-  #   keyOut: power
-  # # while triggered:
-  # - type: ToggleComponentsOnTrigger
-  #   keysIn:
-  #   - power
-  #   components:
+  # power delete trigger:
+  - type: TriggerOnUnpowered
+    keyOut: power
+  - type: DeleteOnTrigger
+    keysIn:
+    - power
 
 
 
@@ -101,18 +106,28 @@
       - state: controller
       - state: connected
         map: ["connectedLayer"]
+        visible: false
+        shader: unshaded
+      - map: ["connectedActivateLayer"]
+        visible: false
+        shader: unshaded
+        loop: false
   - type: Appearance
   - type: AnimationPlayer
-  - type: SyncSprite
   - type: GenericVisualizer
     visuals:
-      enum.PulverisBarrierControllerVisuals.Connected:
+      enum.PulverisBarrierRelayVisuals.ConnectionVisualState:
         connectedLayer:
-          True: {visible: true}
-          False: {visible: false}
+          None: {visible: false}
+          North: {visible: true}
+      enum.PulverisBarrierRelayVisuals.ConnectionVisualActivatingState:
+        connectedActivateLayer:
+          None: {visible: false}
+          North: {visible: true, state: connected_activate, loop: false}
   - type: Rotatable
   - type: Anchorable
   - type: PulverisBarrierController
+  - type: PulverisBarrierRelay
   - type: NodeContainer
     examinable: true
     nodes:
@@ -132,12 +147,15 @@
   - type: Battery
     netsync: false
     maxCharge: 1000
-    startingCharge: 0
+    startingCharge: 1000
   - type: BatteryCharger
     voltage: Medium
   - type: PowerNetworkBattery
     maxChargeRate: 100
   - type: ExaminableBattery
+  - type: PowerCell
+  - type: PowerCellDraw
+    drawRate: 10
   - type: Lock
     locked: true
   # - type: LockVisuals
@@ -149,7 +167,135 @@
     range: 200
   - type: ActivatableUI
     key: enum.PulverisBarrierControllerUiKey.Key
+  - type: ActivatableUIRequiresPower
   - type: UserInterface
     interfaces:
         enum.PulverisBarrierControllerUiKey.Key:
           type: PulverisBarrierControllerBoundUserInterface
+
+- type: entity
+  id: PulverisBarrierOmniRelay
+  parent: [ BaseMachine ]
+  name: pulveris barrier relay
+  description: A hefty machine capable of revealing an ultra-pressurized tear in reality.
+  placement:
+    mode: SnapgridCenter
+  components:
+  - type: Physics
+    bodyType: Static
+  - type: Transform
+    anchored: true
+    noRot: false
+  - type: Sprite
+    drawdepth: Mobs
+    noRot: true
+    sprite: _VDS/Structures/Machines/PulverisBarrier/relay.rsi
+    layers:
+      - state: relay
+      - state: connected
+        map: ["connectedLayer"]
+        visible: false
+        shader: unshaded
+      # - map: ["connectedActivateLayer"]
+      #   visible: false
+      #   shader: unshaded
+      #   loop: false
+  - type: Appearance
+  - type: AnimationPlayer
+  - type: GenericVisualizer
+    visuals:
+      enum.PulverisBarrierRelayVisuals.ConnectionVisualState:
+        connectedLayer:
+          None: {visible: false}
+          North: {visible: true}
+          East: {visible: true}
+          West: {visible: true}
+          South: {visible: true}
+      # enum.PulverisBarrierRelayVisuals.ConnectionVisualActivatingState:
+      #   connectedActivateLayer:
+      #     None: {visible: false}
+      #     North: {visible: true, state: connected_activate, loop: false}
+  - type: Anchorable
+  - type: PulverisBarrierRelay
+  - type: NodeContainer
+    examinable: true
+    nodes:
+      input:
+        !type:CableDeviceNode
+        nodeGroupID: MVPower
+      barrier:
+        !type:DirectionalNode
+        nodeGroupID: PulverisBarrier
+        openDirections:
+          - North
+          - East
+          - West
+          - South
+  - type: Battery
+    netsync: false
+    maxCharge: 1000
+    startingCharge: 1000
+  - type: BatteryCharger
+    voltage: Medium
+  - type: PowerNetworkBattery
+    maxChargeRate: 100
+  - type: ExaminableBattery
+  - type: PowerCell
+  - type: PowerCellDraw
+    drawRate: 10
+  - type: Lock
+    locked: true
+  # - type: LockVisuals
+  - type: LockedAnchorable
+  - type: LockedWiresPanel
+  - type: AccessReader
+    access: [[ "Engineering" ]]
+  - type: WirelessNetworkConnection
+    range: 200
+
+- type: entity
+  id: EffectPulverisBarrierActivate
+  name: pulveris barrier
+  description: You can't quite make out what's inside, and you can never seem to properly touch it.
+  placement:
+    mode: SnapgridCenter
+  components:
+  - type: Sprite
+    noRot: true
+    drawdepth: Mobs
+    layers:
+    - sprite: _VDS/Structures/Machines/PulverisBarrier/barrier_fx.rsi
+      state: barrier_activate
+      shader: unshaded
+      loop: false
+  - type: Transform
+    anchored: true
+    noRot: false
+  - type: AnimationPlayer
+  - type: TimedDespawn
+    lifetime: 2.4
+  - type: SpawnOnDespawn
+    prototype: PulverisBarrier
+    inheritRotation: true
+  # - type: TriggerOnSpawn # start active
+  # - type: TimerTrigger
+  #   delay: 2.4
+  #   examinable: false
+  #   keysOut: timer
+  # - type: SpawnOnTrigger
+  #   keysIn:
+  #   - timer
+  #   proto: PulverisBarrier
+  #   predicted: true
+  # - type: DeleteOnTrigger
+  #   keysIn:
+  #   - timer
+  - type: NodeContainer
+    examinable: false
+    nodes:
+      barrier:
+        !type:DirectionalNode
+        nodeGroupID: PulverisBarrier
+        openDirections:
+          - North
+          - South
