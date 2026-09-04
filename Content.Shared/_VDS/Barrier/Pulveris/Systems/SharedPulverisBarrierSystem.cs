@@ -1,115 +1,91 @@
 using System.Linq;
-using System.Numerics;
-using Content.Shared._VDS.Physics;
 using Content.Shared.NodeContainer;
-using Content.Shared.Physics;
-using Content.Shared.Power.EntitySystems;
-using Robust.Shared.Physics.Systems;
-using Robust.Shared.Utility;
+using Content.Shared.Power;
+using Robust.Shared.Network;
+using Robust.Shared.Timing;
 
 namespace Content.Shared._VDS.Barrier.Pulveris.Systems;
 
 public abstract class SharedPulverisBarrierSystem : EntitySystem
 {
-    [Dependency] private readonly ReflectiveRaycastSystem _raycastSystem = default!;
-    [Dependency] private readonly SharedTransformSystem _transformSystem = default!;
-    [Dependency] private readonly RayCastSystem _rayCast = default!;
-    [Dependency] private readonly SharedPowerReceiverSystem _powerReceiverSystem = default!;
+    [Dependency]
+    private readonly INetManager _net = default!;
 
+    [Dependency]
+    private readonly IGameTiming _timing = default!;
 
-    private EntityQuery<PulverisBarrierComponent> _holoQuery;
-    private EntityQuery<PulverisBarrierControllerComponent> _holoControllerQuery;
+    private EntityQuery<NodeContainerComponent> _nodeContainerQuery;
 
     public override void Initialize()
     {
         base.Initialize();
 
-        _holoQuery = GetEntityQuery<PulverisBarrierComponent>();
-        _holoControllerQuery = GetEntityQuery<PulverisBarrierControllerComponent>();
+        _nodeContainerQuery = GetEntityQuery<NodeContainerComponent>();
+
+        SubscribeLocalEvent<PulverisBarrierComponent, PowerChangedEvent>(OnPowerChanged);
+        SubscribeLocalEvent<PulverisBarrierComponent, AttemptPulverisBarrierDeactivateEvent>(
+            OnAttemptPulverisBarrierDeactivate
+        );
     }
 
-    /// <summary>
-    /// Iterates through our barriers and deletes invalid ones.
-    /// </summary>
-    public bool TryUpdateBarrier(Entity<PulverisBarrierComponent> barrier)
+    private void OnAttemptPulverisBarrierDeactivate(
+        Entity<PulverisBarrierComponent> ent,
+        ref AttemptPulverisBarrierDeactivateEvent args
+    )
     {
-        if (TerminatingOrDeleted(barrier))
-            return false;
+        if (args.Cancelled)
+            return;
 
-        if (TryValidateBarrier(barrier))
-            return true;
+        HandleInvalidBarrier(args.Barrier);
+    }
 
+    private void OnPowerChanged(Entity<PulverisBarrierComponent> ent, ref PowerChangedEvent args)
+    {
+        if (!ent.Comp.RequiresPower)
+            return;
+
+        if (!args.Powered)
+        {
+            var ev = new AttemptPulverisBarrierDeactivateEvent(ent);
+            RaiseLocalEvent(ent, ref ev);
+        }
+    }
+
+    public void ProcessBarrier(Entity<PulverisBarrierComponent> barrier)
+    {
+        if (BarrierHasValidConnections(barrier))
+            return;
+
+        Log.Debug("kill");
+
+        HandleInvalidBarrier(barrier);
+    }
+
+    public void HandleInvalidBarrier(Entity<PulverisBarrierComponent> barrier)
+    {
         TryQueueDel(barrier);
-
-        return false;
     }
 
-    public virtual bool TryValidateBarrier(Entity<PulverisBarrierComponent> barrier, NodeContainerComponent? nodeContainer = null)
+    public bool TryUpdateBarrierRelayOwners(Entity<PulverisBarrierComponent> barrier, HashSet<EntityUid> relays)
     {
-
-        if (barrier.Comp.RequiresController && barrier.Comp.Controllers.Count == 0)
+        if (relays.SequenceEqual(barrier.Comp.Relays))
             return false;
 
-        if (barrier.Comp.RequiresPower && !_powerReceiverSystem.IsPowered(barrier.Owner))
-            return false;
-
-        // rest is handled by the server
-
+        barrier.Comp.Relays = relays;
         return true;
     }
 
+    public bool BarrierHasRelay(Entity<PulverisBarrierComponent> barrier)
+    {
+        if (!barrier.Comp.RequiresRelay)
+            return true;
 
-    // public bool CheckBehindForController(Entity<PulverisBarrierComponent> barrier, PulverisBarrierControllerComponent? controller = null)
-    // {
-    //     Log.Info("CHECKINGGGG");
-    //     var holoXform = Transform(barrier);
-    //     var (holoMapCoords, holoMapDir) = _transformSystem.GetWorldPositionRotation(holoXform);
-    //
-    //     // what we stop at (walls)
-    //     var probeFilter = new QueryFilter
-    //     {
-    //         MaskBits = (int)CollisionGroup.FullTileMask,
-    //         IsIgnored = ent => _holoControllerQuery.TryGetComponent(ent, out var controller) || _holoQuery.TryGetComponent(ent, out var _),
-    //         Flags = QueryFlags.Static | QueryFlags.Dynamic
-    //     };
-    //
-    //     // what we are looking for (a holo controller)
-    //     var pathFilter = new QueryFilter
-    //     {
-    //         MaskBits = (int)CollisionGroup.AllMask,
-    //         Flags = QueryFlags.Static | QueryFlags.Dynamic
-    //     };
-    //
-    //     // define a new ray stat
-    //     var ray = new ReflectiveRayState(
-    //             probeFilter,
-    //             pathFilter,
-    //             origin: holoMapCoords,
-    //             direction: holoMapDir.Opposite().ToWorldVec(),
-    //             maxRange: 10f, // todo: range defined in controller based on power input
-    //             holoXform.MapID
-    //     );
-    //     var (probeResult, pathResults) = _raycastSystem.CastAndUpdateReflectiveRayStateRef(ref ray);
-    //     Log.Info($"Hnng {probeResult} and {pathResults.Hit}, {pathResults.Results.Count}");
-    //     // var probe = _rayCast.CastRay(
-    //     //         holoXform.MapID,
-    //     //         holoMapCoords,
-    //     //         holoMapDir.Opposite().ToWorldVec() * 10f,
-    //     //         probeFilter);
-    //     // var probeHit = probe.Results.FirstOrNull();
-    //     //
-    //     // var probeHitRange = (probeHit.HasValue)
-    //     //     ? Vector2.Distance(_transformSystem.GetWorldPosition(probeHit.Value.Entity), holoMapCoords)
-    //     //     : 10f;
-    //     //
-    //     // var path = _rayCast.CastRay(
-    //     //         holoXform.MapID,
-    //     //         holoMapCoords,
-    //     //         holoMapDir.Opposite().ToWorldVec() * probeHitRange,
-    //     //         pathFilter);
-    //
-    //     Log.Info($"{pathResults.Results.Any(ent => ent.Entity == barrier.Comp.Controller)}");
-    //     return pathResults.Results.Any(ent => ent.Entity == barrier.Comp.Controller);
-    // }
+        return barrier.Comp.Relays.Count != 0;
+    }
 
+    public virtual bool BarrierHasValidConnections(Entity<PulverisBarrierComponent> barrier)
+    {
+        // handled in server
+        return true;
+    }
 }

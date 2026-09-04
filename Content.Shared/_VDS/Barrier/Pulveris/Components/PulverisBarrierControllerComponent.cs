@@ -1,27 +1,12 @@
+using Content.Shared._VDS.Barrier.Pulveris.Components;
+using Robust.Shared.GameStates;
 using Robust.Shared.Serialization;
 
 namespace Content.Shared._VDS.Barrier;
 
-[RegisterComponent]
-[Serializable]
+[RegisterComponent, NetworkedComponent]
 public sealed partial class PulverisBarrierControllerComponent : Component
-{
-    /// <summary>
-    /// The entities that this source has control over.
-    /// </summary>
-    [ViewVariables(VVAccess.ReadOnly)]
-    public HashSet<EntityUid> Members = [];
-
-
-    [DataField]
-    public bool Connected;
-}
-
-[Serializable, NetSerializable]
-public enum PulverisBarrierControllerVisuals : byte
-{
-    Connected,
-}
+{ }
 
 [Serializable, NetSerializable]
 public enum PulverisBarrierControllerUiKey : byte

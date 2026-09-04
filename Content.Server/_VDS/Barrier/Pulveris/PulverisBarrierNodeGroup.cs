@@ -1,11 +1,11 @@
-using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Content.Server.NodeContainer.NodeGroups;
 using Content.Shared._VDS.Barrier;
+using Content.Shared._VDS.Barrier.Pulveris.Components;
 using Content.Shared._VDS.Barrier.Pulveris.Systems;
-using Content.Shared.FixedPoint;
 using Content.Shared.NodeContainer;
 using Content.Shared.NodeContainer.NodeGroups;
-using Robust.Shared.Map.Components;
+using Robust.Shared.Spawners;
 
 namespace Content.Server._VDS.Barrier.Pulveris;
 
@@ -16,7 +16,9 @@ public sealed class PulverisBarrierNodeGroup : BaseNodeGroup
     private readonly IEntityManager _entMan = default!;
 
     private EntityQuery<PulverisBarrierComponent> _barrierQuery;
+    private EntityQuery<TimedDespawnComponent> _timedDespawnQuery;
     private EntityQuery<PulverisBarrierControllerComponent> _barrierControllerQuery;
+    private EntityQuery<PulverisBarrierRelayComponent> _barrierRelayQuery;
     private EntityQuery<TransformComponent> _xformQuery;
 
     /// <summary>
@@ -37,78 +39,63 @@ public sealed class PulverisBarrierNodeGroup : BaseNodeGroup
     [ViewVariables(VVAccess.ReadOnly)]
     public HashSet<EntityUid> Relays = [];
 
+    /// <summary>
+    /// Invalid entities connected to the node group, soon to be removed.
+    /// </summary>
+    [ViewVariables(VVAccess.ReadOnly)]
+    public HashSet<EntityUid> Invalid = [];
+
+    [ViewVariables(VVAccess.ReadOnly)]
+    public bool HasGrace = true;
+
     public override void Initialize(Node sourceNode, IEntityManager entMan)
     {
         base.Initialize(sourceNode, entMan);
-
         _barrierQuery = entMan.GetEntityQuery<PulverisBarrierComponent>();
+        _timedDespawnQuery = entMan.GetEntityQuery<TimedDespawnComponent>();
         _barrierControllerQuery = entMan.GetEntityQuery<PulverisBarrierControllerComponent>();
+        _barrierRelayQuery = entMan.GetEntityQuery<PulverisBarrierRelayComponent>();
         _xformQuery = entMan.GetEntityQuery<TransformComponent>();
-
     }
 
     public override void LoadNodes(List<Node> groupNodes)
     {
         base.LoadNodes(groupNodes);
+        var pulverisBarrierSys = _entMan.System<SharedPulverisBarrierSystem>();
+        var pulverisBarrierRelaySys = _entMan.System<SharedPulverisBarrierRelaySystem>();
+
+        // add all nodes to cache. we'll further process them later.
+        foreach (var node in groupNodes)
+        {
+            // if (AlreadyAdded(node.Owner))
+            //     continue;
+
+            if (_barrierRelayQuery.TryGetComponent(node.Owner, out var relayComp) && relayComp.Valid)
+            {
+                Relays.Add(node.Owner);
+                pulverisBarrierRelaySys.ProcessRelay((node.Owner, relayComp));
+            }
+
+            if (_barrierQuery.TryGetComponent(node.Owner, out var barrierComp))
+            {
+                Barriers.Add(node.Owner);
+            }
+        }
 
         foreach (var node in groupNodes)
         {
-            if (
-                _barrierControllerQuery.TryComp(node.Owner, out var controller)
-                && IsValidController((node.Owner, controller))
-            )
+            if (_barrierQuery.TryGetComponent(node.Owner, out var barrierComp))
             {
-                Controllers.Add(node.Owner);
-                continue;
+                // this is why we need to do two loops
+                pulverisBarrierSys.TryUpdateBarrierRelayOwners((node.Owner, barrierComp), Relays);
+
+                pulverisBarrierSys.ProcessBarrier((node.Owner, barrierComp));
             }
 
-            Barriers.Add(node.Owner);
-        }
-
-        if (Barriers.Count > 0)
-        {
-            var pulverBarrierSys = _entMan.System<SharedPulverisBarrierSystem>();
-
-            foreach (var barrier in Barriers)
+            if (_barrierRelayQuery.TryGetComponent(node.Owner, out var relayComponent))
             {
-                if (!_barrierQuery.TryComp(barrier, out var barrierComp))
-                    continue;
-
-                barrierComp.Controllers = Controllers;
-
-                if (pulverBarrierSys.TryUpdateBarrier((barrier, barrierComp)))
-                    continue;
-
-                Barriers.Remove(barrier);
+                pulverisBarrierRelaySys.ProcessRelay((node.Owner, relayComponent));
             }
-
         }
-        if (Controllers.Count > 0)
-        {
-            var pulverBarrierControllerSys = _entMan.System<SharedPulverisBarrierControllerSystem>();
-
-            foreach (var controller in Controllers)
-            {
-                if (!_barrierControllerQuery.TryComp(controller, out var controllerComp))
-                    continue;
-
-                controllerComp.Connected = Barriers.Count > 0;
-                pulverBarrierControllerSys.TryUpdateAppearance(controller);
-            }
-
-        }
-    }
-    private bool IsValidController([NotNullWhen(true)] Entity<PulverisBarrierControllerComponent>? controller)
-    {
-        if (!controller.HasValue)
-            return false;
-
-        if (!_xformQuery.TryGetComponent(controller.Value, out var xform))
-            return false;
-
-        if (!xform.GridUid.HasValue || !_entMan.TryGetComponent<MapGridComponent>(xform.GridUid.Value, out var grid) || grid == null)
-            return false;
-
-        return true;
     }
 }

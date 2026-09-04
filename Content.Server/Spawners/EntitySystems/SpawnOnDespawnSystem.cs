@@ -6,6 +6,8 @@ namespace Content.Server.Spawners.EntitySystems;
 
 public sealed class SpawnOnDespawnSystem : EntitySystem
 {
+    [Dependency] private readonly SharedTransformSystem _transformSystem = default!;
+
     public override void Initialize()
     {
         base.Initialize();
@@ -18,7 +20,15 @@ public sealed class SpawnOnDespawnSystem : EntitySystem
         if (!TryComp(uid, out TransformComponent? xform))
             return;
 
-        Spawn(comp.Prototype, xform.Coordinates);
+        if (comp.InheritRotation)
+        {
+            var newEnt = Spawn(comp.Prototype, xform.Coordinates);
+            _transformSystem.SetLocalRotation(newEnt, xform.LocalRotation);
+        }
+        else
+        {
+            Spawn(comp.Prototype, xform.Coordinates);
+        }
     }
 
     public void SetPrototype(Entity<SpawnOnDespawnComponent> entity, EntProtoId prototype)
