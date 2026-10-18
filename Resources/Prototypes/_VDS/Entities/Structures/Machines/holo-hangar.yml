@@ -9,6 +9,7 @@
   - type: Sprite
     noRot: true
     drawdepth: Mobs
+    offset: "0,0.25" # offset taller sprite to be properly placed onto tile
     layers:
     - sprite: _VDS/Structures/Machines/PulverisBarrier/barrier.rsi
       state: barrier
@@ -102,8 +103,10 @@
     drawdepth: Mobs
     noRot: true
     sprite: _VDS/Structures/Machines/PulverisBarrier/controller.rsi
+    offset: "0,0.25" # offset taller sprite to be properly placed onto tile
     layers:
       - state: controller
+      - state: vines
       - state: connected
         map: ["connectedLayer"]
         visible: false
@@ -185,21 +188,26 @@
     bodyType: Static
   - type: Transform
     anchored: true
-    noRot: false
+    noRot: true
   - type: Sprite
     drawdepth: Mobs
     noRot: true
     sprite: _VDS/Structures/Machines/PulverisBarrier/relay.rsi
+    offset: "0,0.25" # offset taller sprite to be properly placed onto tile
     layers:
       - state: relay
+      - state: vines
       - state: connected
         map: ["connectedLayer"]
         visible: false
         shader: unshaded
-      # - map: ["connectedActivateLayer"]
-      #   visible: false
-      #   shader: unshaded
-      #   loop: false
+        offset: "0,-0.25"
+      - state: connected_activate
+        map: ["connectedActivateLayer"]
+        visible: false
+        shader: unshaded
+        offset: "0,-0.25"
+        loop: false
   - type: Appearance
   - type: AnimationPlayer
   - type: GenericVisualizer
@@ -208,13 +216,13 @@
         connectedLayer:
           None: {visible: false}
           North: {visible: true}
-          East: {visible: true}
-          West: {visible: true}
-          South: {visible: true}
-      # enum.PulverisBarrierRelayVisuals.ConnectionVisualActivatingState:
-      #   connectedActivateLayer:
-      #     None: {visible: false}
-      #     North: {visible: true, state: connected_activate, loop: false}
+          East: {visible: false}
+          West: {visible: false}
+          South: {visible: false}
+      enum.PulverisBarrierRelayVisuals.ConnectionVisualActivatingState:
+        connectedActivateLayer:
+          None: {visible: false}
+          North: {visible: true, state: connected_activate, loop: false}
   - type: Anchorable
   - type: PulverisBarrierRelay
   - type: NodeContainer
@@ -263,6 +271,7 @@
   - type: Sprite
     noRot: true
     drawdepth: Mobs
+    offset: "0,0.25" # offset taller sprite to be properly placed onto tile
     layers:
     - sprite: _VDS/Structures/Machines/PulverisBarrier/barrier_fx.rsi
       state: barrier_activate

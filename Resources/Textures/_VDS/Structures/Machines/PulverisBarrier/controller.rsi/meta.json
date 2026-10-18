@@ -3,12 +3,16 @@
   "license": "CC-BY-SA-3.0",
   "copyright": "Made by Jellvisk",
   "size": {
-    "x": 48,
-    "y": 51
+    "x": 32,
+    "y": 48
   },
   "states": [
     {
       "name": "controller",
+      "directions": 4
+    },
+    {
+      "name": "vines",
       "directions": 4
     },
     {

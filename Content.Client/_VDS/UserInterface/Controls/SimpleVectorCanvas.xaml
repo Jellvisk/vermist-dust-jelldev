@@ -1,0 +1,4 @@
+<controls:SimpleVectorCanvas
+    xmlns="https://spacestation14.io"
+    xmlns:controls="clr-namespace:Content.Client._VDS.UserInterface.Controls">
+</controls:SimpleVectorCanvas>
