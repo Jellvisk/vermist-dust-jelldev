@@ -3,7 +3,7 @@
                 xmlns:vds="clr-namespace:Content.Client._VDS.UserInterface.Controls"
                 Title="{Loc 'pulveris-barrier-controller-ui-title'}"
 
-                Resizable="False">
+                Resizable="True">
     <GridContainer Columns="2">
         <BoxContainer VerticalExpand="True"
                       HorizontalAlignment="Center"
@@ -12,14 +12,24 @@
             <Button Name="ToggleButton"
                     Text="test"></Button>
         </BoxContainer>
-        <vds:SimpleVectorCanvas Name="Testy">
-            <vds:SimpleVectorCanvas.Points>
-                <vds:SimpleCanvasPoint Key="origin" Location="100 0" Radius="4" />
-                <vds:SimpleCanvasPoint Key="corner" Location="120 120" Radius="2"/>
-            </vds:SimpleVectorCanvas.Points>
-            <vds:SimpleVectorCanvas.Lines>
-                <vds:SimpleCanvasLine Key="bitch" From="420 320" To="-300 10" Width="2"/>
-            </vds:SimpleVectorCanvas.Lines>
-        </vds:SimpleVectorCanvas>
+        <BoxContainer VerticalExpand="True"
+                      HorizontalExpand="True"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      Margin="0 10">
+            <vds:SimpleVectorCanvas Name="Testy">
+                <vds:SimpleVectorCanvas.Vectors>
+                    <vds:SimpleVectorCanvasPoint Position="100 200"/>
+                    <vds:SimpleVectorCanvasPoint Position="120 120"/>
+                    <vds:SimpleVectorCanvasPoint Position="130 120"/>
+                    <vds:SimpleVectorCanvasLine From="100 140" To="330 300" Steps="2" BrushKey="epic"/>
+                    <vds:SimpleVectorCanvasPoint Position="200 300" BrushKey="cool"/>
+                </vds:SimpleVectorCanvas.Vectors>
+                <vds:SimpleVectorCanvas.Brushes>
+                    <vds:Circle Key="cool" Color="Red" Radius="50" Filled="False"/>
+                    <vds:Circle Key="epic" Color="Blue" Radius="5" Filled="True"/>
+                </vds:SimpleVectorCanvas.Brushes>
+            </vds:SimpleVectorCanvas>
+        </BoxContainer>
     </GridContainer>
 </controls:FancyWindow>
