@@ -1,7 +1,8 @@
 <controls:FancyWindow xmlns="https://spacestation14.io"
                 xmlns:controls="clr-namespace:Content.Client.UserInterface.Controls"
-                xmlns:vds="clr-namespace:Content.Client._VDS.UserInterface.Controls"
+                xmlns:vds="clr-namespace:Content.Client._VDS.UserInterface.Controls.VectorCanvas"
                 Title="{Loc 'pulveris-barrier-controller-ui-title'}"
+                MinSize="300 300"
 
                 Resizable="True">
     <GridContainer Columns="2">
@@ -12,24 +13,23 @@
             <Button Name="ToggleButton"
                     Text="test"></Button>
         </BoxContainer>
-        <BoxContainer VerticalExpand="True"
-                      HorizontalExpand="True"
-                      HorizontalAlignment="Center"
-                      VerticalAlignment="Center"
-                      Margin="0 10">
-            <vds:SimpleVectorCanvas Name="Testy">
-                <vds:SimpleVectorCanvas.Vectors>
-                    <vds:SimpleVectorCanvasPoint Position="100 200"/>
-                    <vds:SimpleVectorCanvasPoint Position="120 120"/>
-                    <vds:SimpleVectorCanvasPoint Position="130 120"/>
-                    <vds:SimpleVectorCanvasLine From="100 140" To="330 300" Steps="2" BrushKey="epic"/>
-                    <vds:SimpleVectorCanvasPoint Position="200 300" BrushKey="cool"/>
-                </vds:SimpleVectorCanvas.Vectors>
-                <vds:SimpleVectorCanvas.Brushes>
-                    <vds:Circle Key="cool" Color="Red" Radius="50" Filled="False"/>
-                    <vds:Circle Key="epic" Color="Blue" Radius="5" Filled="True"/>
-                </vds:SimpleVectorCanvas.Brushes>
-            </vds:SimpleVectorCanvas>
-        </BoxContainer>
+        <vds:VectorCanvas Name="Testy" VerticalExpand="True" HorizontalExpand="True" MaxSize="500">
+            <vds:VectorCanvas.Vectors>
+                <vds:VectorCanvasPoint Position="100 200"/>
+                <vds:VectorCanvasPoint Position="120 120"/>
+                <vds:VectorCanvasPoint Position="130 120"/>
+                <vds:VectorCanvasLine From="110 50" To="440 100" Steps="48" BrushKey="penis"/>
+                <vds:VectorCanvasLine From="210 50" To="340 310" Steps="10" BrushKey="pober"/>
+                <vds:VectorCanvasLine From="100 140" To="330 300" Steps="2" BrushKey="epic"/>
+                <vds:VectorCanvasPoint Position="200 300" BrushKey="cool"/>
+            </vds:VectorCanvas.Vectors>
+            <vds:VectorCanvas.Brushes>
+                <vds:BrushCircle Key="cool" Color="Red" Radius="50" Filled="False"/>
+                <vds:BrushCircle Key="epic" Color="Blue" Radius="5" Filled="True"/>
+                <vds:BrushStamp Key="penis" TexturePath="/Textures/Objects/Power/AME/ame_jar.rsi/jar.png"/>
+                <vds:BrushControl Key="pober" Size="5 5"/>
+                <vds:BrushCircle Key="pober" Color="Teal" Radius="5" Filled="True"/>
+            </vds:VectorCanvas.Brushes>
+        </vds:VectorCanvas>
     </GridContainer>
 </controls:FancyWindow>

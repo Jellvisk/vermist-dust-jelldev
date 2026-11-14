@@ -16,6 +16,7 @@ public sealed partial class PulverisBarrierControllerWindow : FancyWindow
         IoCManager.InjectDependencies(this);
 
         ToggleButton.OnPressed += _ => OnToggleButtonPressed?.Invoke();
+        Testy.UpdateState();
     }
 
 }
